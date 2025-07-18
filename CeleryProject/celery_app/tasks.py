@@ -14,7 +14,7 @@ from PIL import Image
 def send_welcome_email(self, user_email, username):
     """
     Send a welcome email to a newly registered user.
-    
+
     Args:
         user_email and username: The ID of the user to send the email to
     """
@@ -38,7 +38,7 @@ def send_welcome_email(self, user_email, username):
 def send_invoice_email(self, order_id):
     """
     Generate a PDF invoice and email it to the customer.
-    
+
     Args:
         order_id (int): The ID of the order to generate invoice for
     """
@@ -52,11 +52,31 @@ def send_invoice_email(self, order_id):
         width, height = letter
 
         p.setFont("Helvetica", 12)
-        p.drawString(100, height - 50, f"Invoice for Order #{order.id}")
-        p.drawString(100, height - 100, f"Customer: {order.user.get_full_name()} ({order.user.email})")
-        p.drawString(100, height - 130, f"Product: {order.product_name}")
-        p.drawString(100, height - 160, f"Price: ${order.price}")
-        p.drawString(100, height - 190, f"Date: {order.created_at.strftime('%Y-%m-%d')}")
+        p.drawString(
+            100,
+            height - 50,
+            f"Invoice for Order #{order.id}"
+        )
+        p.drawString(
+            100,
+            height - 100,
+            f"Customer: {order.user.get_full_name()} ({order.user.email})"
+        )
+        p.drawString(
+            100,
+            height - 130,
+            f"Product: {order.product_name}"
+        )
+        p.drawString(
+            100,
+            height - 160,
+            f"Price: ${order.price}"
+        )
+        p.drawString(
+            100,
+            height - 190,
+            f"Date: {order.created_at.strftime('%Y-%m-%d')}"
+        )
 
         p.showPage()
         p.save()
@@ -98,7 +118,7 @@ def send_daily_summary_emails():
 def process_image(self, user_profile_id):
     """
     Process uploaded user image by creating multiple resized versions.
-    
+
     Args:
         user_profile_id (int): ID of the user who uploaded the image
     """
@@ -106,30 +126,30 @@ def process_image(self, user_profile_id):
         user_profile = UserProfile.objects.get(id=user_profile_id)
         original_image_path = user_profile.image.path
         original_image = Image.open(original_image_path)
-        
+
         sizes = {
             'thumbnail': (100, 100),
             'medium': (300, 300),
             'large': (600, 600)
         }
-        
+
         for size_name, size in sizes.items():
             # Create resized image
             resized_image = original_image.copy()
             resized_image.thumbnail(size)
-            
+
             # Prepare save path
             original_image_dir = os.path.dirname(original_image_path)
             resize_image_dir = os.path.join(os.path.dirname(original_image_dir), size_name)
             os.makedirs(resize_image_dir, exist_ok=True)
-            
+
             # Save resized image
             filename = os.path.basename(original_image_path)
             save_path = os.path.join(resize_image_dir, filename)
             resized_image.save(save_path)
-            
+
             print(f"Saved {size_name} version at {save_path}")
-            
+
         return f"Successfully processed image for user {user_profile_id}"
     except Exception as e:
         raise self.retry(exc=e, countdown=60, max_retries=3)

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from django.contrib.auth.models import User
 from .models import UserProfile, Order
 from django.conf import settings
@@ -76,7 +76,6 @@ class CeleryTaskTest(TestCase):
         Test successful welcome email sending
         """
 
-    
         send_welcome_email(self.user.email, self.user.username)
 
         self.assertEqual(len(mail.outbox), 1)
@@ -123,20 +122,10 @@ class CeleryTaskTest(TestCase):
         """
 
         send_daily_summary_emails()
-        
+
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to, [self.user.email])
         self.assertEqual(mail.outbox[0].subject, "Your Daily Activity")
-
-    @patch('celery_app.tasks.send_mail', side_effect=Exception("SMTP Error"))
-    def test_send_daily_summary_emails_failure(self, mock_send_mail):
-        """
-        Task should propagate exception if send_mail fails for any user.
-        """
-        with self.assertRaises(Exception):
-            send_daily_summary_emails()
-
-        mock_send_mail.assert_called()
 
     @patch('celery_app.tasks.send_mail', side_effect=Exception("SMTP Error"))
     def test_send_daily_summary_emails_failure(self, mock_send_mail):

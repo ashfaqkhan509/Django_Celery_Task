@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from .tasks import send_welcome_email, send_invoice_email, process_image
 from .models import Order, UserProfile
 
+
 @receiver(post_save, sender=User)
 def send_welcome_email_signal(sender, instance, created, **kwargs):
     if created:

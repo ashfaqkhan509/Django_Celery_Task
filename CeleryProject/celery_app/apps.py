@@ -6,4 +6,4 @@ class CeleryAppConfig(AppConfig):
     name = 'celery_app'
 
     def ready(self):
-        import celery_app.signals
+        import celery_app.signals # noqa: F401
