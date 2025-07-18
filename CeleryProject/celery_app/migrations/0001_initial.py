@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                     serialize=False,
                     verbose_name='ID'
                 )),
-                ('product_name',models.CharField(max_length=100)),
+                ('product_name', models.CharField(max_length=100)),
                 ('price', models.DecimalField(decimal_places=2, max_digits=8)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('user', models.ForeignKey(

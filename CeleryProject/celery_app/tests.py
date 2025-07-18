@@ -98,7 +98,7 @@ class CeleryTaskTest(TestCase):
         Test successful invoice generation and email
         """
 
-        result = send_invoice_email(self.order.id)
+        send_invoice_email(self.order.id)
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].from_email, "ashfaq319535@gmail.com")

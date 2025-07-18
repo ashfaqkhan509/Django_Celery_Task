@@ -103,7 +103,7 @@ def send_daily_summary_emails():
     This task is scheduled to run daily via django-celery-beat.
     """
     users = User.objects.all()
-    
+
     for user in users:
         send_mail(
             subject='Your Daily Activity',
