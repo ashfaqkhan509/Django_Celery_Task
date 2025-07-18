@@ -1,0 +1,12 @@
+[run]
+source = .
+omit = 
+    */site-packages/*
+    */dist-packages/*
+    */usr/lib/*
+
+[report]
+omit = 
+    */site-packages/*
+    */dist-packages/*
+    */usr/lib/*
