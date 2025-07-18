@@ -1,4 +1,4 @@
 Django==5.2.4
 Pillow==11.3.0
 reportlab==3.6.8
-celery0==5.5.3
+celery>=5.2
