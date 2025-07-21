@@ -69,5 +69,17 @@ jobs:
       - name: Run Tests
         env:
           CELERY_BROKER_URL: redis://localhost:6379/0
+          CELERY_RESULT_BACKEND: redis://localhost:6379/0
+          SECRET_KEY: django-insecure-9nl=j@28d^p=o#pa=6hb#2ks!6)q0zavf_1)gdp7!oa3gw-306
+          DEBUG: 'True'
+          DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,[::1]
+          TZ: Asia/Karachi
+          EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
+          EMAIL_HOST: smtp.gmail.com
+          EMAIL_PORT: '587'
+          EMAIL_USE_TLS: 'True'
+          EMAIL_HOST_USER: ashfaq319535@gmail.com
+          EMAIL_HOST_PASSWORD: kroc_bszl_kkkc_qfzt
+          DEFAULT_FROM_EMAIL: ashfaq319535@gmail.com
         run: |
           python manage.py test
