@@ -8,6 +8,7 @@ import random
 
 fake = Faker()
 
+
 class Command(BaseCommand):
     help = "Create users with profiles and orders in bulk"
 
