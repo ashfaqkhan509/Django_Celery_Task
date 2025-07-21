@@ -5,8 +5,8 @@ from django.db import transaction
 from faker import Faker
 import random
 
-fake = Faker()
 
+fake = Faker()
 
 class Command(BaseCommand):
     help = "Create users with profiles and orders in bulk"
@@ -20,7 +20,9 @@ class Command(BaseCommand):
         num_users = options['users']
         num_orders = options['orders']
 
-        self.stdout.write(self.style.WARNING(f"Creating {num_users} users with {num_orders} orders each..."))
+        self.stdout.write(self.style.WARNING(
+            f"Creating {num_users} users with {num_orders} orders each..."
+        ))
 
         users = []
         for _ in range(num_users):
@@ -34,7 +36,9 @@ class Command(BaseCommand):
         created_users = User.objects.bulk_create(users)
 
         # Create UserProfiles
-        profiles = [UserProfile(user=user, image='profile_images/default.png') for user in created_users]
+        profiles = [
+            UserProfile(user=user, image='profile_images/default.png') for user in created_users
+        ]
         UserProfile.objects.bulk_create(profiles)
 
         # Create Orders
@@ -48,4 +52,6 @@ class Command(BaseCommand):
                 ))
         Order.objects.bulk_create(orders)
 
-        self.stdout.write(self.style.SUCCESS("Bulk users, profiles, and orders created successfully!"))
+        self.stdout.write(self.style.SUCCESS(
+            "Bulk users, profiles, and orders created successfully!"
+        ))
