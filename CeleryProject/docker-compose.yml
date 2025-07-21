@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    command: gunicorn CeleryProject.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - db_data:/app/db
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+      celery:
+        condition: service_started
+
+  celery:
+    build: .
+    command: celery -A CeleryProject worker -l info
+    volumes:
+      - .:/app
+      - db_data:/app/db
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  beat:
+    build: .
+    command: celery -A CeleryProject beat -l info --scheduler celery.beat.PersistentScheduler --schedule /celery-data/celerybeat-schedule
+    volumes:
+      - .:/app
+      - ./celery-data:/celery-data
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+      celery:
+        condition: service_started
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  db_data:
