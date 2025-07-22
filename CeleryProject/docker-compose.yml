@@ -1,50 +1,19 @@
 version: "3.9"
 
 services:
-  web:
-    build: .
-    command: gunicorn CeleryProject.wsgi:application --bind 0.0.0.0:8000
+  db:
+    image: postgres:17
+    container_name: celery_postgres
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
-      - .:/app
-      - db_data:/app/db
-    ports:
-      - "8000:8000"
-    env_file:
-      - .env
-    depends_on:
-      redis:
-        condition: service_healthy
-      celery:
-        condition: service_started
-
-  celery:
-    build: .
-    command: celery -A CeleryProject worker -l info
-    volumes:
-      - .:/app
-      - db_data:/app/db
-    env_file:
-      - .env
-    depends_on:
-      redis:
-        condition: service_healthy
-
-  beat:
-    build: .
-    command: celery -A CeleryProject beat -l info --scheduler celery.beat.PersistentScheduler --schedule /celery-data/celerybeat-schedule
-    volumes:
-      - .:/app
-      - ./celery-data:/celery-data
-    env_file:
-      - .env
-    depends_on:
-      redis:
-        condition: service_healthy
-      celery:
-        condition: service_started
+      - postgres_data:/var/lib/postgresql/data
 
   redis:
-    image: redis
+    image: redis:7
+    container_name: celery_redis
     ports:
       - "6379:6379"
     healthcheck:
@@ -53,5 +22,52 @@ services:
       timeout: 3s
       retries: 5
 
+  web:
+    build: .
+    container_name: celery_web
+    # command: gunicorn CeleryProject.wsgi:application --bind 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_started
+      redis:
+        condition: service_healthy
+
+  celery:
+    build: .
+    container_name: celery_worker
+    command: celery -A CeleryProject worker -l info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_started
+      redis:
+        condition: service_healthy
+
+  beat:
+    build: .
+    container_name: celery_beat
+    command: celery -A CeleryProject beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      celery:
+        condition: service_started
+
 volumes:
-  db_data:
+  postgres_data:

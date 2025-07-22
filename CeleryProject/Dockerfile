@@ -31,4 +31,8 @@ USER appuser
 EXPOSE 8000
 
 # Default command (use gunicorn for production)
-CMD ["gunicorn", "CeleryProject.wsgi:application", "--bind", "0.0.0.0:8000"]
+# CMD ["gunicorn", "CeleryProject.wsgi:application", "--bind", "0.0.0.0:8000"]
+
+# Default command (use Django's development server for learning)
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
